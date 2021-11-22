@@ -172,5 +172,32 @@
       "PUSH_MON",
       "FILTHY"
     ]
+  },
+  {
+	  "id": "mon_zombie_mechanic_static",
+    "type": "MONSTER",
+    "name": { "str": "zombie mechanic zapper" },
+    "description": "This tough looking zombie shambles along with sparks occasionally jumping from their tire iron. It's safe to assume they worked on electric vehicles exclusively.",
+    "copy-from": "mon_zombie_mechanic",
+	"melee_damage": [ { "damage_type": "electric", "amount": 4 } ],
+	"luminance": 4,
+	"special_when_hit": [ "ZAPBACK", 100 ],
+    "color": "white",
+	"upgrades": { "half_life": 14, "into_group": "GROUP_ZOMBIE_MECHANIC_UPGRADE" },
+	"flags": [
+      "SEES",
+      "HEARS",
+      "SMELLS",
+      "STUMBLES",
+      "WARM",
+      "BASHES",
+      "GROUP_BASH",
+      "POISON",
+      "ELECTRIC",
+      "NO_BREATHE",
+      "REVIVES",
+      "PUSH_MON",
+      "FILTHY"
+    ]
   }
 ]

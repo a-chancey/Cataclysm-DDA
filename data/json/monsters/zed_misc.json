@@ -1637,5 +1637,44 @@
     "copy-from": "mon_zombie",
     "death_drops": "zombie_reenactor_drops",
     "color": "blue"
+  },
+  {
+    "id": "mon_zombie_mechanic",
+    "type": "MONSTER",
+    "name": { "str": "zombie mechanic" },
+    "description": "This stumbling monster is wielding a tire iron. Their work clothes are tattered and covered in blood. Something tells me they're not going to change before their shift starts.",
+    "copy-from": "mon_zombie_tough",
+	"melee_dice_sides": 4,
+    "death_drops": "mon_zombie_mechanic_death_drops",
+    "color": "brown",
+	"upgrades": { "half_life": 14, "into_group": "GROUP_ZOMBIE_MECHANIC_UPGRADE" }
+  },
+  {
+	"id": "mon_zombie_mechanic_brute",
+    "type": "MONSTER",
+    "name": { "str": "zombie mechanic brute" },
+	"description": "Once a manager at the garage, and now another shambling corpse. It looks like they had plenty of time to hit the gym in a previous life.",
+	"copy-from": "mon_zombie_mechanic",
+	"color": "red",
+	"melee_dice_sides": 8,
+	"armor_bash": 4,
+	"armor_cut": 6,
+	"armor_bullet": 5,
+	"special_attacks": [ { "id": "smash", "throw_strength": 72, "cooldown": 30 }, [ "GRAB", 7 ] ],	
+	"flags": [
+      "SEES",
+      "HEARS",
+      "SMELLS",
+      "STUMBLES",
+      "WARM",
+      "BASHES",
+      "GROUP_BASH",
+      "POISON",
+      "PUSH_VEH",
+      "NO_BREATHE",
+      "REVIVES",
+      "PUSH_MON",
+      "FILTHY"
+    ]
   }
 ]

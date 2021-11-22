@@ -30,6 +30,7 @@
 /sound/
 /templates/
 /tools/format/json_formatter.cgi
+/out/*
 CataclysmWin.cscope_file_list
 CataclysmWin.depend
 CataclysmWin.layout
