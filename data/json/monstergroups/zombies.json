@@ -613,5 +613,14 @@
       { "monster": "mon_zombie_plated", "weight": 50, "starts": "20 days" },
       { "monster": "mon_zombie_shell", "weight": 20, "starts": "40 days" }
     ]
+  },
+  {
+	"name": "GROUP_MECHANIC",
+    "type": "monstergroup",
+    "monsters": [
+      { "monster": "mon_zombie_mechanic", "weight": 300},
+      { "monster": "mon_zombie_mechanic_static", "weight": 10 },
+      { "monster": "mon_zombie_mechanic_brute", "weight": 25}
+    ]
   }
 ]

@@ -80,7 +80,8 @@
       ],
       "add": [ { "item": "microwave", "x": 16, "y": 18, "chance": 2 }, { "item": "coffeemaker", "x": 16, "y": 19, "chance": 2 } ],
       "toilets": { "T": {  } },
-      "place_signs": [ { "signage": "Discount Tires", "x": 22, "y": 1 } ]
+      "place_signs": [ { "signage": "Discount Tires", "x": 22, "y": 1 } ],
+	  "place_monsters": [ { "monster": "GROUP_MECHANIC", "x": [ 7, 20 ], "y": [ 10, 15 ], "chance": 10 } ]
     }
   },
   {
