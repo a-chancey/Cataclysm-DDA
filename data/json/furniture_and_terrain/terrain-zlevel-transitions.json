@@ -473,5 +473,15 @@
     "color": "light_gray",
     "move_cost": 2,
     "flags": [ "TRANSPARENT", "ROAD" ]
+  },
+  {
+    "type": "terrain",
+    "id": "t_migo_resin_stairs_up",
+    "name": "stairs",
+    "description": "A flight of resin stairs leading up.",
+    "symbol": "<",
+    "color": "yellow",
+    "move_cost": 2,
+    "flags": [ "SUPPORTS_ROOF", "TRANSPARENT", "GOES_UP", "INDOORS", "PLACE_ITEM" ]
   }
 ]

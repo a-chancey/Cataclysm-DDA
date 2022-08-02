@@ -3,7 +3,7 @@
     "type": "mapgen",
     "update_mapgen_id": "fbmc_fire_lookout_tower_0",
     "method": "json",
-    "object": { "set": [ { "point": "furniture", "id": "f_bulletin", "x": 20, "y": 4 } ] }
+    "object": { "set": [ { "point": "furniture", "id": "f_bulletin", "x": 8, "y": 8 } ] }
   },
   {
     "type": "mapgen",
@@ -15,7 +15,7 @@
     "type": "mapgen",
     "update_mapgen_id": "fbmc_fire_lookout_tower_water_well",
     "method": "json",
-    "object": { "set": [ { "point": "terrain", "id": "t_water_pump", "x": 7, "y": 15 } ] }
+    "object": { "set": [ { "point": "terrain", "id": "t_water_pump", "x": 8, "y": 14 } ] }
   },
   {
     "type": "mapgen",
@@ -26,6 +26,19 @@
         { "point": "terrain", "id": "t_radio_tower", "x": 18, "y": 19 },
         { "point": "terrain", "id": "t_radio_controls", "x": 18, "y": 18 }
       ]
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "fbmc_fire_lookout_tower_stairs",
+    "object": {
+      "mapgensize": [ 1, 1 ],
+      "rows": [
+        "<"
+      ],
+      "terrain": { "<": "t_wood_stairs_up" },
+      "flags": [ "ALLOW_TERRAIN_UNDER_OTHER_DATA"]
     }
   }
 ]

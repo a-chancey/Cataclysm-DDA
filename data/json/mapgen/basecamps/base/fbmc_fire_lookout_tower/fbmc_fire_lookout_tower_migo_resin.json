@@ -5,8 +5,7 @@
     "method": "json",
     "object": {
       "place_nested": [
-        { "chunks": [ "fbmc_migo_resin_wall_vertical" ], "x": 7, "y": 5 },
-        { "chunks": [ "fbmc_migo_resin_shack_south" ], "x": 8, "y": 5 }
+        { "chunks": [ "fbmc_migo_resin_shack_south_large" ], "x": 13, "y": 2 }
       ]
     }
   },
@@ -19,6 +18,28 @@
         { "chunks": [ "fbmc_migo_resin_wall_vertical" ], "x": 9, "y": 14 },
         { "chunks": [ "fbmc_migo_resin_shack_north" ], "x": 10, "y": 14 }
       ]
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "fbmc_migo_resin_shack_south_large",
+    "object": {
+      "mapgensize": [ 9, 9 ],
+      "rows": [
+        "wwwwwwwww",
+        "w.......w",
+        "w.......w",
+        "w....wwww",
+        "w....w ww",
+        "w....w+ww",
+        "w.......w",
+        "w.......w",
+        "wwwv+vwww"
+      ],
+      "terrain": { "<": "t_migo_resin_stairs_up" },
+      "palettes": [ "fbmh_migo_resin_palette" ],
+      "flags": [ "ALLOW_TERRAIN_UNDER_OTHER_DATA"]
     }
   }
 ]
