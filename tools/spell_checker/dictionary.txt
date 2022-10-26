@@ -16,6 +16,7 @@ aerially
 aeterna
 aetheric
 afterbirth
+afterglow
 afterimage
 afterlife
 aftermarket
@@ -538,9 +539,11 @@ dryptosaurus
 drywalled
 dunderfuck
 dyoplosaurus
+dysmorphia
 dysrhythmia
 earthbag
 earthbags
+earthshaper
 ebon
 ebook
 eboshi
@@ -569,6 +572,7 @@ encumbers
 endochitin
 endolymph
 ener
+enervating
 enjoyability
 envenomations
 eocs
@@ -1291,6 +1295,7 @@ nodachi
 nodosaurus
 noisiness
 nomex
+nonfunctional
 nonpareils
 nonrevealing
 nonsedated
@@ -1356,6 +1361,7 @@ pachyrhinosaurus
 packable
 paf
 palpably
+palpitate
 panoplosaurus
 papyrifera
 parabellum
@@ -1567,6 +1573,7 @@ remodulator
 rended
 renderer
 renfaires
+renfield
 rennet
 replow
 reprime
@@ -1790,6 +1797,8 @@ sssssh
 ssssssss
 starer
 starrin
+staunchable
+staunching
 std
 steeltoed
 steerable
@@ -1992,6 +2001,7 @@ undulates
 uneasing
 unfavorite
 unfermented
+unfixable
 unflavored
 unfoldable
 ungraspable
