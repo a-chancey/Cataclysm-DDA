@@ -1011,12 +1011,18 @@ bool inventory_column::has_available_choices() const
 
 bool inventory_column::is_selected( const inventory_entry &entry ) const
 {
+    return ( entry.is_selectable() && entry == get_highlighted() ) || ( multiselect &&
+            is_selected_by_category( entry ) );
+}
+
+bool inventory_column::is_highlighted( const inventory_entry &entry ) const
+{
     return entry == get_highlighted() || ( multiselect && is_selected_by_category( entry ) );
 }
 
 bool inventory_column::is_selected_by_category( const inventory_entry &entry ) const
 {
-    return entry.is_item() && mode == navigation_mode::CATEGORY
+    return entry.is_selectable() && mode == navigation_mode::CATEGORY
            && entry.get_category_ptr() == get_highlighted().get_category_ptr()
            && page_of( entry ) == page_index();
 }
@@ -1427,7 +1433,7 @@ void inventory_column::draw( const catacurses::window &win, const point &p,
         int x2 = p.x + std::max( static_cast<int>( reserved_width - get_cells_width() ), 0 );
         int yy = p.y + line;
 
-        const bool selected = active && is_selected( entry );
+        const bool selected = active && is_highlighted( entry );
 
         const int hx_max = p.x + get_width();
         inclusive_rectangle<point> rect = inclusive_rectangle<point>( point( x1, yy ),
@@ -2798,6 +2804,16 @@ item_location inventory_pick_selector::execute()
     }
 }
 
+inventory_selector::stats container_inventory_selector::get_raw_stats() const
+{
+    return get_weight_and_volume_stats( loc->get_total_contained_weight(),
+                                        loc->get_total_weight_capacity(),
+                                        loc->get_total_contained_volume(), loc->get_total_capacity(),
+                                        loc->max_containable_length(), loc->max_containable_volume(),
+                                        loc->get_total_holster_volume() - loc->get_used_holster_volume(),
+                                        loc->get_used_holsters(), loc->get_total_holsters() );
+}
+
 void inventory_selector::action_examine( const item_location &sitem )
 {
     // Code below pulled from the action_examine function in advanced_inv.cpp
@@ -3379,9 +3395,12 @@ drop_locations pickup_selector::execute()
 
 bool pickup_selector::wield( int &count )
 {
-    std::vector<inventory_entry *> selected = get_active_column().get_all_selected();
+    inventory_entry &selected = get_active_column().get_highlighted();
+    if( !selected.is_item() ) {
+        return false;
+    }
 
-    item_location it = selected.front()->any_item();
+    item_location it = selected.any_item();
     if( count == 0 ) {
         count = INT_MAX;
     }
@@ -3401,9 +3420,12 @@ bool pickup_selector::wield( int &count )
 
 bool pickup_selector::wear()
 {
-    std::vector<inventory_entry *> selected = get_active_column().get_all_selected();
+    inventory_entry &selected = get_active_column().get_highlighted();
+    if( !selected.is_item() ) {
+        return false;
+    }
 
-    std::vector<item_location> items{ selected.front()->any_item() };
+    std::vector<item_location> items{ selected.any_item() };
     std::vector<int> quantities{ 0 };
 
     if( u.can_wear( *items.front() ).success() ) {
