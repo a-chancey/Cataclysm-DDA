@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.20)
 
 project(CataclysmDDA)
 
@@ -17,7 +17,8 @@ option(CURSES "Build curses version." "ON")
 option(SOUND "Support for in-game sounds & music." "OFF")
 option(BACKTRACE "Support for printing stack backtraces on crash" "ON")
 option(LIBBACKTRACE "Print backtrace with libbacktrace." "OFF")
-option(USE_HOME_DIR "Use user's home directory for save files." "ON")
+option(USE_XDG_DIR "Use XDG directories for save and config files." "OFF")
+option(USE_HOME_DIR "Use user's home directory for save and config files." "ON")
 option(USE_PREFIX_DATA_DIR "Use UNIX system directories for game data in release build." "ON")
 option(LOCALIZE "Support for language localizations. Also enable UTF support." "ON")
 option(LANGUAGES "Compile localization files for specified languages." "")
@@ -38,7 +39,7 @@ if (TESTS)
 include(CTest)
 endif()
 
-message(STATUS "${PROJECT} build environment --")
+message(STATUS "${PROJECT_NAME} build environment --")
 message(STATUS "Build realm is: ${CMAKE_SYSTEM_NAME} ${CMAKE_HOST_SYSTEM_PROCESSOR}")
 
 if (NOT CMAKE_BUILD_TYPE)
@@ -124,6 +125,9 @@ if ("${CMAKE_SYSTEM_NAME}" MATCHES "(Linux|FreeBSD|Darwin)")
     if (NOT DATA_PREFIX)
         set(DATA_PREFIX ${CMAKE_INSTALL_PREFIX}/share/cataclysm-dda)
     endif ()
+    if (NOT README_DIR)
+        set(README_DIR ${DATA_PREFIX})
+    endif ()
     if (NOT LOCALE_DIR)
         set(LOCALE_DIR ${CMAKE_INSTALL_PREFIX}/share/locale)
     endif ()
@@ -147,6 +151,9 @@ endif ()
 if ("${CMAKE_SYSTEM_NAME}" MATCHES "(Windows|MSYS)")
     if (NOT DATA_PREFIX)
         set(DATA_PREFIX ${CMAKE_INSTALL_PREFIX}/data)
+    endif ()
+    if (NOT README_DIR)
+        set(README_DIR ${CMAKE_INSTALL_PREFIX})
     endif ()
     if (NOT LOCALE_DIR)
         set(LOCALE_DIR ${CMAKE_INSTALL_PREFIX}/lang)
@@ -180,10 +187,15 @@ if (TILES)
     set(CURSES OFF)
 endif ()
 
+# Can't use both home and xdg directories
+if (USE_XDG_DIR)
+    set(USE_HOME_DIR OFF)
+endif ()
+
 # Set build types and display info
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
     set(RELEASE 0)
-    message(STATUS "Build ${PROJECT} in development mode --")
+    message(STATUS "Build ${PROJECT_NAME} in development mode --")
     message(STATUS "Binaries will be located in: " ${CMAKE_SOURCE_DIR})
     set(CMAKE_VERBOSE_MAKEFILE ON)
     # Since CataclysmDDA does not respect PREFIX for development builds
@@ -223,6 +235,7 @@ message(STATUS "CURSES                        : ${CURSES}")
 message(STATUS "SOUND                         : ${SOUND}")
 message(STATUS "BACKTRACE                     : ${BACKTRACE}")
 message(STATUS "LOCALIZE                      : ${LOCALIZE}")
+message(STATUS "USE_XDG_DIR                   : ${USE_XDG_DIR}")
 message(STATUS "USE_HOME_DIR                  : ${USE_HOME_DIR}")
 message(STATUS "LANGUAGES                     : ${LANGUAGES}")
 message(STATUS "See doc/COMPILING/COMPILING-CMAKE.md for details and more info --")
@@ -249,14 +262,14 @@ if (NOT MSVC)
     if (NOT "${CMAKE_SYSTEM_NAME}" MATCHES "Windows")
         set(CATA_WARNINGS "${CATA_WARNINGS} -Wredundant-decls")
     endif ()
-    set(CATA_OTHER_FLAGS "${CATA_OTHER_FLAGS} -fsigned-char")
+    set(CATA_OTHER_FLAGS "${CATA_OTHER_FLAGS} -fsigned-char -g1")
     # Compact the whitespace in the warning string
     string(REGEX REPLACE "[\t ]+" " " CATA_WARNINGS "${CATA_WARNINGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CATA_WARNINGS} ${CATA_OTHER_FLAGS}")
-    set(CMAKE_CXX_FLAGS_DEBUG "-Og -g")
+    set(CMAKE_CXX_FLAGS_DEBUG "-Og -g2")
 endif ()
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -302,9 +315,9 @@ if (TILES)
     if (NOT VCPKG_MANIFEST_MODE)
         find_package(SDL2_ttf)
     else()
-        find_package(sdl2-ttf)
+        find_package(SDL2_ttf)
     endif()
-    if (NOT (SDL2_TTF_FOUND OR TARGET SDL2::SDL2_ttf OR TARGET SDL2::SDL2_ttf-static))
+    if (NOT (SDL2_TTF_FOUND OR TARGET SDL2::SDL2_ttf OR TARGET SDL2_ttf::SDL2_ttf-static))
         message(FATAL_ERROR
                 "This project requires SDL2_ttf to be installed to compile in graphical mode. \
                  Please install the SDL2_ttf development libraries, \
@@ -314,11 +327,11 @@ if (TILES)
 
     message(STATUS "Searching for SDL2_image library --")
     if(VCPKG_MANIFEST_MODE)
-        find_package(sdl2-image)
+        find_package(SDL2_image)
     else()
         find_package(SDL2_image)
     endif()
-    if (NOT (SDL2_IMAGE_FOUND OR TARGET SDL2::SDL2_image))
+    if (NOT (SDL2_IMAGE_FOUND OR TARGET SDL2_image::SDL2_image-static))
         message(FATAL_ERROR
                 "This project requires SDL2_image to be installed to compile in graphical mode. \
                  Please install the SDL2_image development libraries, \
@@ -358,8 +371,9 @@ if (SOUND)
     # Sound requires SDL_mixer library
     if(VCPKG_MANIFEST_MODE)
         message(STATUS "Searching for sdl2-mixer library --")
-        find_package(sdl2-mixer)
-        if (NOT TARGET SDL2::SDL2_mixer)
+        find_package(Ogg REQUIRED)
+        find_package(SDL2_mixer)
+        if (NOT (TARGET SDL2_mixer::SDL2_mixer OR TARGET SDL2_mixer::SDL2_mixer-static))
             message(FATAL_ERROR
                     "You need the sdl2-mixer development library \
                      to be able to compile with sound enabled. \
@@ -406,6 +420,10 @@ if (USE_HOME_DIR)
     add_definitions(-DUSE_HOME_DIR)
 endif ()
 
+if (USE_XDG_DIR)
+    add_definitions(-DUSE_XDG_DIR)
+endif ()
+
 find_program(CCACHE_FOUND ccache)
 if (CCACHE_FOUND AND CATA_CCACHE)
     set(CMAKE_C_COMPILER_LAUNCHER ccache)
@@ -432,7 +450,7 @@ if (CATA_CLANG_TIDY_PLUGIN OR CATA_CLANG_TIDY_EXECUTABLE)
 endif()
 
 install(DIRECTORY doc gfx
-    DESTINATION .
+    DESTINATION ${DATA_PREFIX}
 )
 
 if (RELEASE)
@@ -441,9 +459,9 @@ if (RELEASE)
         ${CMAKE_SOURCE_DIR}/LICENSE.txt
         ${CMAKE_SOURCE_DIR}/LICENSE-OFL-Terminus-Font.txt
         ${CMAKE_SOURCE_DIR}/VERSION.txt
-        DESTINATION .)
+        DESTINATION ${README_DIR})
     if (TILES)
-        install(DIRECTORY ${CMAKE_SOURCE_DIR}/gfx DESTINATION .)
+        install(DIRECTORY ${CMAKE_SOURCE_DIR}/gfx DESTINATION ${DATA_PREFIX})
     endif()
 endif()
 

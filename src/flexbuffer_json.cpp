@@ -1,12 +1,23 @@
 #include "flexbuffer_json.h"
 
+#include <atomic>
 #include <cstring>
 #include <istream>
+#include <optional>
 
 #include "cata_unreachable.h"
 #include "filesystem.h"
 #include "json.h"
-#include "optional.h"
+
+namespace
+{
+std::atomic_bool report_unvisited_members{true};
+} // namespace
+
+bool Json::globally_report_unvisited_members( bool do_report )
+{
+    return report_unvisited_members.exchange( do_report );
+}
 
 const std::string &Json::flexbuffer_type_to_string( flexbuffers::Type t )
 {
@@ -129,7 +140,6 @@ std::string Json::str() const
     return ret;
 }
 
-
 bool JsonValue::read( bool &b, bool throw_on_error ) const
 {
     if( !test_bool() ) {
@@ -241,7 +251,8 @@ bool JsonValue::read( std::string &s, bool throw_on_error ) const
 
 void JsonObject::report_unvisited() const
 {
-    if( !visited_fields_bitset_.all() ) {
+#ifndef CATA_IN_TOOL
+    if( !std::uncaught_exceptions() && report_unvisited_members && !visited_fields_bitset_.all() ) {
         std::vector<size_t> skipped_members;
         skipped_members.reserve( visited_fields_bitset_.size() );
         tiny_bitset::block_t *bits = visited_fields_bitset_.bits();
@@ -269,10 +280,12 @@ void JsonObject::report_unvisited() const
         }
 
         error_skipped_members( skipped_members );
+        visited_fields_bitset_.set_all();
     }
+#endif
 }
 
-void JsonObject::error_no_member( const std::string &member ) const
+void JsonObject::error_no_member( const std::string_view member ) const
 {
     std::unique_ptr<std::istream> original_json = root_->get_source_stream();
     std::string source_path = [&] {
@@ -290,7 +303,7 @@ void JsonObject::error_no_member( const std::string &member ) const
     jo.allow_omitted_members();
     jo.get_member( member );
     // Just to make sure the compiler understands we will error earlier.
-    jo.throw_error( "Failed to report missing member " + member );
+    jo.throw_error( str_cat( "Failed to report missing member ", member ) );
 }
 
 void JsonObject::error_skipped_members( const std::vector<size_t> &skipped_members ) const
@@ -329,14 +342,9 @@ void JsonObject::throw_error( const std::string &err ) const
     Json::throw_error( path_, 0, err );
 }
 
-void JsonObject::throw_error_at( const std::string &member, const std::string &err ) const
+void JsonObject::throw_error_at( const std::string_view member, const std::string &err ) const
 {
-    throw_error_at( member.c_str(), err );
-}
-
-void JsonObject::throw_error_at( const char *member, const std::string &err ) const
-{
-    cata::optional<JsonValue> member_opt = get_member_opt( member );
+    std::optional<JsonValue> member_opt = get_member_opt( member );
     if( member_opt.has_value() ) {
         ( *member_opt ).throw_error( err );
     } else {
