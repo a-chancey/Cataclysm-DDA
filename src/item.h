@@ -1117,7 +1117,7 @@ class item : public visitable
         /** Time for this item to be fully fermented. */
         time_duration brewing_time() const;
         /** The results of fermenting this item. */
-        const std::vector<itype_id> &brewing_results() const;
+        const std::map<itype_id, int> &brewing_results() const;
 
         /**
          * Detonates the item and adds remains (if any) to drops.
@@ -1794,8 +1794,8 @@ class item : public visitable
          *
          * For items not counted by charges, this returns vol / this->volume().
          */
-        int charges_per_volume( const units::volume &vol ) const;
-        int charges_per_weight( const units::mass &m ) const;
+        int charges_per_volume( const units::volume &vol, bool suppress_warning = false ) const;
+        int charges_per_weight( const units::mass &m, bool suppress_warning = false ) const;
 
         /**
          * @name Item variables
