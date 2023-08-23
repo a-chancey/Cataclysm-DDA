@@ -222,6 +222,7 @@ Xcode/
 /.flatpak-builder/
 /repo/
 /build-dir/
+/flatpak/
 
 # precompiled headers
 /pch/pch.hpp.pch
